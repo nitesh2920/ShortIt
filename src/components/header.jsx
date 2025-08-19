@@ -54,19 +54,19 @@ const Header = () => {
                   {user?.user_metadata?.name}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                 <DropdownMenuItem className="flex items-center justify-between cursor-pointer select-none">
+                 <DropdownMenuItem >
                   
                   <button
                     onClick={toggleTheme}
                     aria-label="Toggle Dark Mode"
-                    className=" rounded-full  text-yellow-400 hover:text-yellow-300  flex items-center justify-evenly"
+                    className=" rounded-full cursor-pointer text-yellow-400 hover:text-yellow-300  flex "
                   >
                     {theme === "dark" ? (
                       <Sun className="mr-2 w-4 h-4 " />
                     ) : (
                       <Moon className="mr-2 w-4 h-4 " />
                     )}
-                    <span>Dark Mode</span>
+                    <span>{theme === 'dark'?"Light Mode":"Dark Mode"}</span>
                   </button>
                 </DropdownMenuItem>
 
@@ -84,7 +84,7 @@ const Header = () => {
                       navigate("/auth");
                     });
                   }}
-                  className="text-red-400"
+                  className="text-red-400 cursor-pointer"
                 >
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
