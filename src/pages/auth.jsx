@@ -24,10 +24,10 @@ function Auth() {
           ? "Hold up! Let's login first.."
           : title}
       </h1>
-      <Tabs defaultValue="login" className="w-full sm:w-[500px]" onValueChange={(val)=>setTitle(val=== "login"?"Login":"Signup")}>
+      <Tabs defaultValue="login" className="w-full sm:w-[400px]" onValueChange={(val)=>setTitle(val=== "login"?"Login":"Signup")}>
         <TabsList className="grid w-full grid-cols-2 ">
-          <TabsTrigger value="login" className="data-[state=active]:bg-[#7d6b56] bg-muted">Login</TabsTrigger>
-          <TabsTrigger value="signup" className="data-[state=active]:bg-[#7d6b56] bg-muted">Signup</TabsTrigger>
+          <TabsTrigger value="login" >Login</TabsTrigger>
+          <TabsTrigger value="signup">Signup</TabsTrigger>
         </TabsList>
         <TabsContent value="login">
           <Login />
