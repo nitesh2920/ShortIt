@@ -42,7 +42,7 @@ const Dashboard = () => {
   }, [urls?.length]);
 
   return (
-    <div className="-mx-2 -px-2  sm:mx-auto  flex flex-col gap-8 ">
+    <div className="mx-2 px-2 py-4  sm:mx-auto sm:px-8  flex flex-col gap-8 ">
       {(loading || loadingClicks) && (
         <BarLoader width={"100%"} color="#36d7b7" />
       )}
@@ -65,13 +65,13 @@ const Dashboard = () => {
         </Card>
       </div>
       <div className="flex justify-between">
-        <h1 className="text-4xl font-extrabold">My Links</h1>
+        <h1 className="text-2xl sm:text-4xl font-extrabold">My Links</h1>
         <CreateLink />
       </div>
       <div className="relative">
         <Input
           type="text"
-          placeholder="Filter Links..."
+          placeholder="Search links"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
         />

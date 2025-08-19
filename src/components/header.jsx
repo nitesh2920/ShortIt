@@ -9,12 +9,15 @@ import {
 import {logout} from "@/db/apiAuth";
 import useFetch from "@/hooks/use-fetch";
 import {Avatar, AvatarFallback, AvatarImage} from "@radix-ui/react-avatar";
-import {LinkIcon, LogOut} from "lucide-react";
 import {Link, useNavigate} from "react-router-dom";
 import {BarLoader} from "react-spinners";
 import {Button} from "./ui/button";
 import {UrlState} from "@/context";
 import { useLocation } from "react-router-dom";
+import { LinkIcon, LogOut, Sun, Moon } from "lucide-react";
+
+
+import { useTheme } from "@/components/theme-provider";  // Adjust path as needed
 
 const Header = () => {
   const {loading, fn: fnLogout} = useFetch(logout);
@@ -24,9 +27,12 @@ const Header = () => {
 
   const {user, fetchUser} = UrlState();
 
+  const { theme, setTheme } = useTheme();
+  const toggleTheme = () => setTheme(theme === "dark" ? "light" : "dark");
+
   return (
     <>
-      <nav className="py-4 flex justify-between items-center">
+      <nav className="py-4 mx-2 sm:py-2 flex justify-between items-center">
         <Link to="/">
           <img src="/logo.svg" className="h-16" alt="shortner Logo" />
         </Link>
@@ -48,12 +54,29 @@ const Header = () => {
                   {user?.user_metadata?.name}
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
+                 <DropdownMenuItem className="flex items-center justify-between cursor-pointer select-none">
+                  
+                  <button
+                    onClick={toggleTheme}
+                    aria-label="Toggle Dark Mode"
+                    className=" rounded-full  text-yellow-400 hover:text-yellow-300  flex items-center justify-evenly"
+                  >
+                    {theme === "dark" ? (
+                      <Sun className="mr-2 w-4 h-4 " />
+                    ) : (
+                      <Moon className="mr-2 w-4 h-4 " />
+                    )}
+                    <span>Dark Mode</span>
+                  </button>
+                </DropdownMenuItem>
+
                 <DropdownMenuItem>
                   <Link to="/dashboard" className="flex">
                     <LinkIcon className="mr-2 h-4 w-4" />
                     My Links
                   </Link>
                 </DropdownMenuItem>
+
                 <DropdownMenuItem
                   onClick={() => {
                     fnLogout().then(() => {
@@ -66,6 +89,7 @@ const Header = () => {
                   <LogOut className="mr-2 h-4 w-4" />
                   <span>Logout</span>
                 </DropdownMenuItem>
+
               </DropdownMenuContent>
             </DropdownMenu>
           )}

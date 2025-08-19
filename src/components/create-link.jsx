@@ -93,7 +93,7 @@ export function CreateLink() {
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="destructive">Create New Link</Button>
+        <Button >Create New Link</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
@@ -112,13 +112,13 @@ export function CreateLink() {
         {errors.title && <Error message={errors.title} />}
         <Input
           id="longUrl"
-          placeholder="Enter your Loooong URL"
+          placeholder="Enter your Long URL"
           value={formValues.longUrl}
           onChange={handleChange}
         />
         {errors.longUrl && <Error message={errors.longUrl} />}
-        <div className="flex items-center gap-2">
-          <Card className="p-2">{import.meta.env.VITE_DEPLOYED_URL}</Card> /
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Card className="p-2 ">{import.meta.env.VITE_DEPLOYED_URL}</Card> /
           <Input
             id="customUrl"
             placeholder="Custom Link (optional)"
@@ -130,7 +130,7 @@ export function CreateLink() {
         <DialogFooter className="sm:justify-start">
           <Button
             type="button"
-            variant="destructive"
+          
             onClick={createNewLink}
             disabled={loading}
           >

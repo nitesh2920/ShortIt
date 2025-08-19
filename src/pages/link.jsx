@@ -70,7 +70,7 @@ const LinkPage = () => {
       {(loading || loadingStats) && (
         <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />
       )}
-      <div className=" -mx-4 sm:mx-0 -py-2  flex flex-col gap-8 sm:flex-row justify-between  ">
+      <div className=" mx-4  -py-2 sm:py-2  flex flex-col gap-8 sm:flex-row justify-between  ">
         <div className="flex flex-col items-start gap-8 rounded-lg w-full sm:w-2/5">
           <span className="text-5xl sm:text-6xl font-extrabold hover:underline cursor-pointer">
             {url?.title}
@@ -123,7 +123,7 @@ const LinkPage = () => {
           </div>
           <img
             src={url?.qr}
-            className="w-full self-center sm:self-start ring ring-blue-500 p-1 object-contain"
+            className="w-full self-center sm:self-start ring-3 ring-blue-500 p-1 object-contain"
             alt="qr code"
           />
         </div>

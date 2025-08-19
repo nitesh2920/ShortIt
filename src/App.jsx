@@ -10,6 +10,8 @@ import LandingPage from "./pages/landing";
 import Dashboard from "./pages/dashboard";
 import LinkPage from "./pages/link";
 import Auth from "./pages/auth";
+import { ThemeProvider } from "./components/theme-provider";
+
 
 const router = createBrowserRouter([
   {
@@ -49,9 +51,11 @@ const router = createBrowserRouter([
 
 function App() {
   return (
+    <ThemeProvider defaultTheme="dark">
     <UrlProvider>
       <RouterProvider router={router} />
     </UrlProvider>
+    </ThemeProvider>
   );
 }
 
