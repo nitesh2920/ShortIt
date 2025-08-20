@@ -1,6 +1,6 @@
 # 🔗 ShortIt: Simplify Your Links
 
-ShortIt is a web application designed to transform lengthy URLs into concise, shareable links, making it easier to share and manage your web addresses.
+ShortIt is a web application designed to transform lengthy URLs into concise, shareable links, making it easier to share and manage your links.
 
 ## ✨ Key Features
 
