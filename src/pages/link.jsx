@@ -1,38 +1,32 @@
 import DeviceStats from "@/components/device-stats";
-import Location from "@/components/location-stats";
+import LocationStats from "@/components/location-stats";
 import {Button} from "@/components/ui/button";
 import {Card, CardContent, CardHeader, CardTitle} from "@/components/ui/card";
 import {UrlState} from "@/context";
 import {getClicksForUrl} from "@/db/apiClicks";
 import {deleteUrl, getUrl} from "@/db/apiUrls";
 import useFetch from "@/hooks/use-fetch";
-import {Copy, Download, LinkIcon, Trash} from "lucide-react";
+import {Copy, Download, LinkIcon, Trash, ExternalLink, Calendar, MousePointer2} from "lucide-react";
 import {useEffect} from "react";
 import {useNavigate, useParams} from "react-router-dom";
-import {BarLoader, BeatLoader} from "react-spinners";
+import {BarLoader} from "react-spinners";
 
 const LinkPage = () => {
-  const downloadImage = () => {
-    const imageUrl = url?.qr;
-    const fileName = url?.title;
-
-    // Create an anchor element
-    const anchor = document.createElement("a");
-    anchor.href = imageUrl;
-    anchor.download = fileName;
-
-    // Append the anchor to the body
-    document.body.appendChild(anchor);
-
-    // Trigger the download by simulating a click event
-    anchor.click();
-
-    // Remove the anchor from the document
-    document.body.removeChild(anchor);
-  };
   const navigate = useNavigate();
   const {user} = UrlState();
   const {id} = useParams();
+
+  const downloadImage = () => {
+    const imageUrl = url?.qr;
+    const fileName = url?.title;
+    const anchor = document.createElement("a");
+    anchor.href = imageUrl;
+    anchor.download = fileName;
+    document.body.appendChild(anchor);
+    anchor.click();
+    document.body.removeChild(anchor);
+  };
+
   const {
     loading,
     data: url,
@@ -60,104 +54,150 @@ const LinkPage = () => {
     navigate("/dashboard");
   }
 
-  let link = "";
-  if (url) {
-    link = url?.custom_url ? url?.custom_url : url.short_url;
-  }
+  const shortLink = url?.custom_url ? url?.custom_url : url?.short_url;
+  const fullShortLink = `${import.meta.env.VITE_DEPLOYED_URL}/${shortLink}`;
 
   return (
-    <>
+    <div className="space-y-8 animate-in fade-in duration-700 pb-20">
       {(loading || loadingStats) && (
-        <BarLoader className="mb-4" width={"100%"} color="#36d7b7" />
+        <BarLoader className="mb-4 rounded-full" width={"100%"} color="oklch(var(--primary))" />
       )}
-      <div className=" mx-4  -py-2 sm:py-2  flex flex-col gap-8 sm:flex-row justify-between  ">
-        <div className="flex flex-col items-start gap-8 rounded-lg w-full sm:w-2/5">
-          <span className="text-5xl sm:text-6xl font-extrabold hover:underline cursor-pointer">
-            {url?.title}
-          </span>
-          <a
-            href={`${import.meta.env.VITE_DEPLOYED_URL}/${link}`}
-            target="_blank"
-            className="text-xl xl:text-4xl text-blue-400 font-bold hover:underline cursor-pointer"
-          >
-            {`${import.meta.env.VITE_DEPLOYED_URL}/${link}`}
-          </a>
-          <a
-            href={url?.original_url}
-            target="_blank"
-            className="flex items-center gap-1 hover:underline cursor-pointer"
-          >
-            <LinkIcon className="p-1" />
-            {url?.original_url}
-          </a>
-          <span className="flex items-end font-extralight text-sm">
-            {new Date(url?.created_at).toLocaleString()}
-          </span>
-          <div className="flex gap-2">
+
+      <div className="flex flex-col lg:flex-row gap-8">
+        {/* Left Column: Link Info */}
+        <div className="flex flex-col gap-6 lg:w-2/5">
+          <div className="space-y-4">
+             <h1 className="text-4xl md:text-6xl font-black tracking-tight leading-tight">
+                {url?.title}
+             </h1>
+             
+             <div className="flex flex-col gap-2">
+                <a
+                  href={fullShortLink}
+                  target="_blank"
+                  className="text-2xl md:text-3xl text-primary font-bold hover:underline break-all flex items-center gap-2 group"
+                >
+                  {fullShortLink}
+                  <ExternalLink className="h-5 w-5 opacity-50 group-hover:opacity-100 transition-opacity" />
+                </a>
+                
+                <a
+                  href={url?.original_url}
+                  target="_blank"
+                  className="flex items-center gap-2 text-muted-foreground hover:text-foreground transition-colors break-all text-sm md:text-base"
+                >
+                  <LinkIcon className="h-4 w-4 shrink-0" />
+                  {url?.original_url}
+                </a>
+             </div>
+
+             <div className="flex items-center gap-2 text-muted-foreground text-sm font-medium">
+                <Calendar className="h-4 w-4" />
+                Created on {new Date(url?.created_at).toLocaleDateString()}
+             </div>
+          </div>
+
+          <div className="flex gap-3">
             <Button
-              variant="ghost"
-              onClick={() =>
-                navigator.clipboard.writeText(`${import.meta.env.VITE_DEPLOYED_URL}/${link}`)
-              }
+              variant="secondary"
+              className="rounded-2xl h-12 px-6 shadow-sm hover:bg-primary hover:text-white transition-all"
+              onClick={() => navigator.clipboard.writeText(fullShortLink)}
             >
-              <Copy />
+              <Copy className="h-4 w-4 mr-2" />
+              Copy
             </Button>
-            <Button variant="ghost" onClick={downloadImage}>
-              <Download />
+            <Button 
+                variant="secondary"
+                className="rounded-2xl h-12 px-6 shadow-sm hover:bg-primary hover:text-white transition-all"
+                onClick={downloadImage}
+            >
+              <Download className="h-4 w-4 mr-2" />
+              QR
             </Button>
             <Button
-              variant="ghost"
+              variant="secondary"
+              className="rounded-2xl h-12 px-6 shadow-sm hover:bg-destructive hover:text-white transition-all"
               onClick={() =>
                 fnDelete().then(() => {
                   navigate("/dashboard");
                 })
               }
-              disable={loadingDelete}
+              disabled={loadingDelete}
             >
               {loadingDelete ? (
-                <BeatLoader size={5} color="white" />
+                <BarLoader width={40} color="#ffffff" />
               ) : (
-                <Trash />
+                <>
+                    <Trash className="h-4 w-4 mr-2" />
+                    Delete
+                </>
               )}
             </Button>
           </div>
-          <img
-            src={url?.qr}
-            className="w-full self-center sm:self-start ring-3 ring-blue-500 p-1 object-contain"
-            alt="qr code"
-          />
+
+          <Card className="glass border-0 shadow-2xl overflow-hidden rounded-[2.5rem] group mt-4">
+            <CardContent className="p-8 flex justify-center bg-white/50 backdrop-blur-sm">
+                <img
+                    src={url?.qr}
+                    className="w-full max-w-[280px] aspect-square object-contain group-hover:scale-105 transition-transform duration-500"
+                    alt="QR Code"
+                />
+            </CardContent>
+          </Card>
         </div>
 
-        <Card className="sm:w-3/5">
-          <CardHeader>
-            <CardTitle className="text-4xl font-extrabold">Stats</CardTitle>
-          </CardHeader>
-          {stats && stats.length ? (
-            <CardContent className="flex flex-col gap-6">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Total Clicks</CardTitle>
+        {/* Right Column: Statistics */}
+        <div className="lg:w-3/5 space-y-6">
+            <Card className="glass border-0 shadow-xl rounded-[2.5rem] overflow-hidden">
+                <CardHeader className="p-8 pb-4">
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="text-3xl font-black">Link Performance</CardTitle>
+                        <div className="h-12 w-12 rounded-2xl bg-primary/10 flex items-center justify-center">
+                            <MousePointer2 className="h-6 w-6 text-primary" />
+                        </div>
+                    </div>
                 </CardHeader>
-                <CardContent>
-                  <p>{stats?.length}</p>
-                </CardContent>
-              </Card>
+                <CardContent className="p-8 pt-0 space-y-10">
+                    <div className="bg-primary/5 rounded-3xl p-6 border border-primary/10">
+                        <p className="text-sm font-bold text-primary uppercase tracking-wider mb-1">Total Engagements</p>
+                        <div className="text-5xl font-black">{stats?.length || 0}</div>
+                        <p className="text-muted-foreground text-xs mt-2">Clicks generated from this link</p>
+                    </div>
 
-              <CardTitle>Location Data</CardTitle>
-              <Location stats={stats} />
-              <CardTitle>Device Info</CardTitle>
-              <DeviceStats stats={stats} />
-            </CardContent>
-          ) : (
-            <CardContent>
-              {loadingStats === false
-                ? "No Statistics yet"
-                : "Loading Statistics.."}
-            </CardContent>
-          )}
-        </Card>
+                    {stats && stats.length > 0 ? (
+                        <div className="space-y-12">
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold flex items-center gap-2">
+                                    <div className="h-2 w-2 rounded-full bg-orange-500" />
+                                    Top Locations
+                                </h3>
+                                <div className="glass bg-white/30 rounded-3xl p-4">
+                                    <LocationStats stats={stats} />
+                                </div>
+                            </div>
+                            
+                            <div className="space-y-4">
+                                <h3 className="text-xl font-bold flex items-center gap-2">
+                                    <div className="h-2 w-2 rounded-full bg-amber-500" />
+                                    Device Distribution
+                                </h3>
+                                <div className="glass bg-white/30 rounded-3xl p-4">
+                                    <DeviceStats stats={stats} />
+                                </div>
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="text-center py-20 bg-muted/20 rounded-3xl border border-dashed border-border">
+                            <p className="text-muted-foreground font-medium">
+                                {loadingStats ? "Analyzing data..." : "No engagement data available yet."}
+                            </p>
+                        </div>
+                    )}
+                </CardContent>
+            </Card>
+        </div>
       </div>
-    </>
+    </div>
   );
 };
 

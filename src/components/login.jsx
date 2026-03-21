@@ -1,33 +1,25 @@
-import {Input} from "./ui/input";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "./ui/card";
-import {Button} from "./ui/button";
 import {useNavigate, useSearchParams} from "react-router-dom";
+import {Input} from "./ui/input";
+import {Button} from "./ui/button";
+import {BarLoader} from "react-spinners";
 import {useEffect, useState} from "react";
 import * as Yup from "yup";
 import Error from "./error";
 import {login} from "@/db/apiAuth";
-import {BeatLoader} from "react-spinners";
 import useFetch from "@/hooks/use-fetch";
 import {UrlState} from "@/context";
+import { Mail, Lock, LogIn } from "lucide-react";
 
 const Login = () => {
-  let [searchParams] = useSearchParams();
-  const longLink = searchParams.get("createNew");
-
-  const navigate = useNavigate();
-
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     email: "",
     password: "",
   });
+
+  const navigate = useNavigate();
+  let [searchParams] = useSearchParams();
+  const longLink = searchParams.get("createNew");
 
   const handleInputChange = (e) => {
     const {name, value} = e.target;
@@ -37,16 +29,15 @@ const Login = () => {
     }));
   };
 
-  const {loading, error, fn: fnLogin, data} = useFetch(login, formData);
+  const {data, error, loading, fn: fnLogin} = useFetch(login, formData);
   const {fetchUser} = UrlState();
 
   useEffect(() => {
     if (error === null && data) {
-      fetchUser();
       navigate(`/dashboard?${longLink ? `createNew=${longLink}` : ""}`);
+      fetchUser();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [error, data]);
+  }, [data, error]);
 
   const handleLogin = async () => {
     setErrors([]);
@@ -74,40 +65,52 @@ const Login = () => {
   };
 
   return (
-    <Card>
-      <CardHeader>
-        <CardTitle>Login</CardTitle>
-        <CardDescription>
-          to your account if you already have one
-        </CardDescription>
+    <div className="space-y-4">
+      <div className="space-y-4">
+        <div className="space-y-2">
+          <div className="relative group">
+            <Mail className="absolute left-3 top-3 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Input
+              name="email"
+              type="email"
+              placeholder="Email address"
+              onChange={handleInputChange}
+              className="pl-10 h-12 bg-background/50 border-border/50 focus:border-primary/50 transition-all rounded-xl"
+            />
+          </div>
+          {errors.email && <Error message={errors.email} />}
+        </div>
+        
+        <div className="space-y-2">
+          <div className="relative group">
+            <Lock className="absolute left-3 top-3 h-5 w-5 text-muted-foreground group-focus-within:text-primary transition-colors" />
+            <Input
+              name="password"
+              type="password"
+              placeholder="Password"
+              onChange={handleInputChange}
+              className="pl-10 h-12 bg-background/50 border-border/50 focus:border-primary/50 transition-all rounded-xl"
+            />
+          </div>
+          {errors.password && <Error message={errors.password} />}
+        </div>
+        
         {error && <Error message={error.message} />}
-      </CardHeader>
-      <CardContent className="space-y-2">
-        <div className="space-y-1">
-          <Input
-            name="email"
-            type="email"
-            placeholder="Enter Email"
-            onChange={handleInputChange}
-          />
-        </div>
-        {errors.email && <Error message={errors.email} />}
-        <div className="space-y-1">
-          <Input
-            name="password"
-            type="password"
-            placeholder="Enter Password"
-            onChange={handleInputChange}
-          />
-        </div>
-        {errors.password && <Error message={errors.password} />}
-      </CardContent>
-      <CardFooter>
-        <Button onClick={handleLogin}>
-          {loading ? <BeatLoader size={10} color="#36d7b7" /> : "Login"}
-        </Button>
-      </CardFooter>
-    </Card>
+      </div>
+
+      <Button 
+        onClick={handleLogin} 
+        disabled={loading}
+        className="w-full h-12 premium-gradient text-white rounded-xl font-semibold shadow-lg hover:shadow-primary/25 transition-all mt-4"
+      >
+        {loading ? <BarLoader width={"100%"} color="#ffffff" /> : (
+          <div className="flex items-center justify-center gap-2">
+            <LogIn className="h-4 w-4" />
+            Sign In
+          </div>
+        )}
+      </Button>
+    </div>
   );
 };
 

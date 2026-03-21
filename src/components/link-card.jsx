@@ -1,76 +1,92 @@
 /* eslint-disable react/prop-types */
-import {Copy, Download, LinkIcon, Trash} from "lucide-react";
+import {Copy, Download, LinkIcon, Trash, ExternalLink, Calendar} from "lucide-react";
 import {Link} from "react-router-dom";
 import {Button} from "./ui/button";
 import useFetch from "@/hooks/use-fetch";
 import {deleteUrl} from "@/db/apiUrls";
-import {BeatLoader} from "react-spinners";
+import {BarLoader} from "react-spinners";
 
 const LinkCard = ({url = [], fetchUrls}) => {
   const downloadImage = () => {
     const imageUrl = url?.qr;
-    const fileName = url?.title; // Desired file name for the downloaded image
-
-    // Create an anchor element
+    const fileName = url?.title;
     const anchor = document.createElement("a");
     anchor.href = imageUrl;
     anchor.download = fileName;
-
-    // Append the anchor to the body
     document.body.appendChild(anchor);
-
-    // Trigger the download by simulating a click event
     anchor.click();
-      console.log("url",url)
-    // Remove the anchor from the document
     document.body.removeChild(anchor);
   };
 
   const {loading: loadingDelete, fn: fnDelete} = useFetch(deleteUrl, url.id);
 
+  const shortUrl = `${import.meta.env.VITE_DEPLOYED_URL}/${url?.custom_url ? url?.custom_url : url.short_url}`;
+
   return (
-    <div className="flex flex-col md:flex-row gap-5 border p-4  rounded-lg">
+    <div className="flex flex-col md:flex-row gap-6 glass p-6 rounded-3xl border-0 shadow-lg hover:shadow-primary/5 transition-all group relative overflow-hidden">
+      <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:opacity-10 transition-opacity pointer-events-none">
+         <LinkIcon className="h-24 w-24 -rotate-12" />
+      </div>
+
       <img
         src={url?.qr}
-        className="h-32 object-contain  ring-3  self-start"
-        alt="qr code"
+        className="h-32 w-32 object-contain bg-white rounded-2xl p-2 shadow-sm border border-border/10 self-center md:self-start group-hover:scale-105 transition-transform"
+        alt="QR Code"
       />
-      <Link to={`/link/${url?.id}`} className="flex flex-col flex-1">
-        <span className="text-3xl font-extrabold hover:underline cursor-pointer">
-          {url?.title}
-        </span>
-        <span className="text-lg sm:text-2xl  font-bold hover:underline cursor-pointer ">
-        {
- `${import.meta.env.VITE_DEPLOYED_URL}/${url?.custom_url ? url?.custom_url : url.short_url}`
-        }
-        
-        </span>
-        <span className="flex   items-start sm:items-center gap-1 hover:underline cursor-pointer  ">
-          <LinkIcon className="p-1" />
-          {url?.original_url}
-        </span>
-        <span className="flex items-end font-extralight text-sm flex-1 text-">
-          {new Date(url?.created_at).toLocaleString()}
-        </span>
-      </Link>
-      <div className="flex gap-2 text- ">
+
+      <div className="flex flex-col flex-1 space-y-3 min-w-0">
+        <Link to={`/link/${url?.id}`} className="space-y-1 group/title">
+          <div className="flex items-center gap-2">
+            <h3 className="text-2xl font-black tracking-tight group-hover/title:text-primary transition-colors truncate">
+              {url?.title}
+            </h3>
+          </div>
+          <div className="flex items-center gap-2 text-primary text-lg font-bold group/link">
+            <span className="truncate">{shortUrl}</span>
+            <ExternalLink className="h-4 w-4 opacity-50 group-hover/link:opacity-100 transition-opacity" />
+          </div>
+        </Link>
+
+        <div className="flex items-center gap-2 text-muted-foreground text-sm group/original">
+          <LinkIcon className="h-3 w-3 shrink-0" />
+          <span className="truncate">{url?.original_url}</span>
+        </div>
+
+        <div className="flex items-center gap-4 pt-2">
+            <div className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground">
+                <Calendar className="h-3.5 w-3.5" />
+                {new Date(url?.created_at).toLocaleDateString()}
+            </div>
+        </div>
+      </div>
+
+      <div className="flex md:flex-col justify-end gap-2 shrink-0 relative z-10">
         <Button
-          variant="ghost"
-          onClick={() =>
-            navigator.clipboard.writeText(`${import.meta.env.VITE_DEPLOYED_URL}/${url?.short_url}`)
-          }
+          variant="secondary"
+          size="icon"
+          className="rounded-xl h-10 w-10 hover:bg-primary hover:text-white transition-all shadow-sm"
+          onClick={() => {
+            navigator.clipboard.writeText(shortUrl);
+          }}
         >
-          <Copy />
+          <Copy className="h-4 w-4" />
         </Button>
-        <Button variant="ghost" onClick={downloadImage}>
-          <Download />
+        <Button 
+          variant="secondary"
+          size="icon" 
+          className="rounded-xl h-10 w-10 hover:bg-primary hover:text-white transition-all shadow-sm"
+          onClick={downloadImage}
+        >
+          <Download className="h-4 w-4" />
         </Button>
         <Button
-          variant="ghost"
+          variant="secondary" 
+          size="icon"
+          className="rounded-xl h-10 w-10 hover:bg-destructive hover:text-white transition-all shadow-sm"
           onClick={() => fnDelete().then(() => fetchUrls())}
-          disable={loadingDelete}
+          disabled={loadingDelete}
         >
-          {loadingDelete ? <BeatLoader size={5} color="white" /> : <Trash />}
+          {loadingDelete ? <BarLoader width={"100%"} color="#ffffff" /> : <Trash className="h-4 w-4" />}
         </Button>
       </div>
     </div>
