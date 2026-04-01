@@ -1,4 +1,4 @@
-name: Supabase Keep-Alive
+name: Supabase Keep-Alive (Sign-in)
 
 on:
   schedule:
@@ -10,11 +10,17 @@ jobs:
   ping:
     runs-on: ubuntu-latest
     steps:
-      - name: Ping Supabase Database
+      - name: Sign-in to Supabase
         env:
           SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
           SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+          USER_EMAIL: ${{ secrets.USER_EMAIL }}
+          USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
         run: |
-          curl -X GET "$SUPABASE_URL/rest/v1/clicks?select=*" \
+          curl -X POST "$SUPABASE_URL/auth/v1/token?grant_type=password" \
           -H "apikey: $SUPABASE_ANON_KEY" \
-          -H "Authorization: Bearer $SUPABASE_ANON_KEY"
+          -H "Content-Type: application/json" \
+          -d '{
+            "email": "'"$USER_EMAIL"'",
+            "password": "'"$USER_PASSWORD"'"
+          }'
